@@ -22,7 +22,10 @@
 </head>
 <body style="display: flex; justify-content: center;">
 
-	<div id="textarea" style="width: 50%; height: 100vh;"></div>
+	<div id="textarea" style="width: 50%; height: 100vh;">
+	    <button onclick="fetchdata()">Promise Callback Test</button>
+	</div>
+	
 	<div id="map" style="width: 50%; height: 100vh;"></div>
 
 	<script>
@@ -41,54 +44,51 @@
 				style : naver.maps.ZoomControlStyle.SMALL
 			}
 		});
-	<%List<NodeDTO> nodeDTO = (List<NodeDTO>) request.getAttribute("NodeList");
 
-int count = nodeDTO.size() + 1;
 
-System.out.println(nodeDTO);
 double x = 0.0;
 double y = 0.0;
 int id = 0;
-for (int i = 0; i < nodeDTO.size(); i++) {
-	x = nodeDTO.get(i).getX();
-	y = nodeDTO.get(i).getY();
-	id = nodeDTO.get(i).getId();%>
-		var marker = new naver.maps.Marker({
-			position : new naver.maps.LatLng(
-	<%=y%>
-		,
-	<%=x%>
-		),
-			map : map,
-			icon : {
-				content : '<p style="color: red; font-weight: bolder;">'
-						+
-	<%=id%>
-		+ '</p> ',
-				size : new naver.maps.Size(22, 35),
-				anchor : new naver.maps.Point(11, 35)
-			}
-		});
-		var infoWindow = new naver.maps.InfoWindow(
-				{
-					content : '<div style="width:150px;text-align:center;padding:10px;">Node PK id is <b>"'
-							+
-	<%=id%>
-		+ '"</b>.</div>'
-				});
 
-		markerList.push(marker);
-		infoWindows.push(infoWindow);
-	<%}%>
-		var count =
+
+function fetchdata(){
+    fetch('http://localhost:8080/requestdata')
+    .then(data=>{
+        console.log("then() 수행 1");
+        console.log("data : " + data);
+        return data.json();
+    })
+    .then(data2=>{
+        for ( let i=0, ii = data2.length; i<ii; i++ ){
+            console.log(data2[i].name);
+            console.log(data2[i].name);
+            var marker = new naver.maps.Marker({
+                position : new naver.maps.LatLng( (data2[i].y, (data2[i].x),
+                map : map,
+                icon : {
+                    content : '<p style="color: red; font-weight: bolder;">'
+                            + data2[i].id + '</p> ',
+                    size : new naver.maps.Size(22, 35),
+                    anchor : new naver.maps.Point(11, 35)
+                }
+            }
+
+        }
+
+    })
+    .catch(error=>{
+        console.log("error:"+error);
+    })
+
+}
+
+
+
+	<%-- 	var count =
 	<%=count%>
 		;
 
-		naver.maps.Event
-				.addListener(
-						map,
-						'click',
-						function(e) {
+		naver.maps.Event.addListener(map,'click',function(e) {
 
 							var marker = new naver.maps.Marker(
 									{
@@ -141,7 +141,7 @@ for (int i = 0; i < nodeDTO.size(); i++) {
 							
 							} */
 						});
-
+ --%>
 		/* function getClickHandler(seq) {
 		    return function(e) {
 		        var marker2 =  markerList[seq],
